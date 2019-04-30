@@ -1,12 +1,16 @@
-﻿Function Convert-ColorToHex {
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function', Target='New*', Justification='New- Commands create definitions but do not change system state')]
+Param()
+Function Convert-ColorToHex {
     <#
       .Synopsis
         Turns a [System.Drawing.Color] into a hex string e.g. Red to ff0000
     #>
-Param (
-    [Alias("Colour")]
-    [System.Drawing.Color]$Color
-)
+    [cmdletbinding()]
+    [outputType([String])]
+    Param (
+        [Alias("Colour")]
+        [System.Drawing.Color]$Color
+    )
     #return 2 hex digits for red, green and blue components
     "{0:x2}{1:x2}{2:x2}" -f $Color.r, $Color.g, $Color.b
 }
@@ -14,6 +18,7 @@ Param (
 Function New-CardImage {
     [cmdletbinding()]
     [Alias('CardImage')]
+    [OutPuttype([Hashtable])]
     Param (
         [parameter(Position=0, Mandatory=$true)]
         [alias('URI')]
@@ -26,6 +31,7 @@ Function New-CardImage {
 Function New-CardSection {
     [CmdletBinding()]
     [alias('cardsection')]
+    [OutputType([System.Collections.Specialized.OrderedDictionary])]
     Param (
         [String]$Title            = '' ,
         [String]$ActivityImage    = '' ,
@@ -102,7 +108,7 @@ Function New-CardInput {
             'isRequired'  = [bool]$IsRequired
             'title'       = $Title
         }
-        if ($InputType = 'DateTime') {InputControl['includeTime'] = $true}
+        if ($InputType -eq 'DateTime') {InputControl['includeTime'] = $true}
     }
     elseif ($Choices) {
         $InputControl = [ordered]@{
@@ -202,7 +208,7 @@ Function New-CardActionOpenUri {
 Function New-CardActionCard {
     <#
       .Synopsis
-        Creates an "Action card" action for a mesage card
+        Creates an "Action card" action for a message card
       .Description
         Actions are presented on the card as buttons the user can click
         For an "action card" action this reveals a 'sub-card' with input controls
@@ -222,6 +228,7 @@ Function New-CardActionCard {
     #>
     [cmdletbinding()]
     [Alias("CardAction")]
+    [OutputType([ordered])]
     param(
         [Parameter(Mandatory=$true,Position=0)]
         $Name ,
@@ -289,7 +296,6 @@ Function New-MessageCard {
 
 # web hook for mobula consulting tennant , consultants team, general channel.
 # $hookUri = 'https://outlook.office.com/webhook/8c4e1893-63bc-463b-b31e-abe0243c54fa@e6af5578-6d03-49e0-af3b-383cf5ec0b5f/IncomingWebhook/8c241937656d49c0a4d8446cfc3df21c/12ae949b-a88b-4d53-ab12-fd6542ddfb45'
-
 
 <#
 First we can use these with the commands being written out in max-verbose. and storing in variables
